@@ -35,5 +35,30 @@ class BulkTimeEntry
     failed_message = failed_counter == 0 ? '' : "#{failed_counter} records failed to import."
     return "Imported #{row_counter} records. #{failed_message}"
   end
+
+  def self.get_issues(project_id, options={})
+    project = self.allowed_project?(project_id)
+    if project
+      query = []
+
+      # options
+      if options[:not_closed].present?
+        query << "issue_statuses.is_closed is FALSE"
+      end
+
+      if options[:only_yours].present?
+        query << "issues.assigned_to_id = "+User.current.id.to_s
+      end
+
+      project.issues.joins(:status).where(query.join(" AND ")).order('id ASC')
+    else
+      []
+    end
+  end
+
+  def self.allowed_project?(project_id)
+    return User.current.projects.where(Project.allowed_to_condition(User.current, :log_time)).
+                                 where(id: project_id).first
+  end
   
 end

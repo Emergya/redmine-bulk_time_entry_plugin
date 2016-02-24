@@ -1,17 +1,6 @@
 es:
-  bulk_time_entry_title: Cargar Horas
-  add_issue: "Añadir tarea"
-  label_bulk_time_entries: Cargar Horas
-  label_bulk_time_add_another: "Añadir más"
-  text_bulk_time_entry_permission: No tiene permiso para cargar horas
-  text_time_added_to_project: "%{hours} horas añadidas a %{project}"
-  label_select_issue_first: Selecciona la tarea, presiona entonces el icono para abrirla en una nueva ventana
-  label_only_my_issues: Solo mostrar las tareas asignadas a mi
-  label_no_closed_issues: No mostrar las tareas cerradas
-  label_select_issue_by_nr: "Selecciona la tarea #"
-  button_save_this_entry: Guardar entrada
-  button_save_this_entry_and_add_new: Guardar entrada y añadir nueva
-  button_start_timer: Hora de comienzo
-  button_stop_timer: Hora de finalizado
-  button_save_all_entries: Guardar todas las entradas
-  time_entry_title: "Tus entradas de hoy"
+  bulk_time_entry_title: Cargar horas
+  label_bulk_time_entries: Cargar horas
+  label_bulk_time_add_another: Añadir más horas
+  text_bulk_time_entry_permission: No tienes permisos para cargar horas
+  text_time_added_to_project: "%{count} horas añadidas a %{target}"

@@ -1,86 +1,22 @@
+<%= javascript_include_tag 'application', plugin: 'redmine-bulk_time_entry_plugin' %>
 <h2>
-   <%= l(:label_bulk_time_entries) %>
-
-    <form style="margin-left: 2em;" id="add-by-issue-id" action="#">
-        <%= l(:add_issue) %> # <%=  text_field_tag :issue_id, "", :size => 10 %>
-
-        <%= submit_tag "OK" %>
-    </form>
+<%= l(:label_bulk_time_entries) %>
+<%= form_tag(add_entry_path, remote: true, method: 'put', id: 'specify-issue-id', style: "margin-left: 2em;") do %>
+	<%= label_tag :specific_issue_id, "Añadir petición #" %>
+	<%= text_field_tag :specific_issue_id %>
+	<%= submit_tag "Enviar" %>
+<% end %>
 </h2>
 
-
-<% content_for :header_tags do %>
-   <%= javascript_include_tag 'prototype', :plugin => 'bulk_time_entry_plugin' %>
-   <%= javascript_include_tag 'timeentry', :plugin => 'bulk_time_entry_plugin' %>
-
-
-   <script type="text/javascript">
-      TimeEntry.defaultUserId = <%= User.current.id %>
-      TimeEntry.loadIssuesUrl = "<%= url_for :action => :load_assigned_issues %>"
-      TimeEntry.timeEntriesTodayUrl = "<%= url_for :action => :time_entries_today %>"
-      TimeEntry.lastValues.lastSpentOnDate = "<%=  Date.today.to_s %>"
-
-      TimeEntry.language.start_timer = <%= raw l(:button_start_timer).to_json %>
-      TimeEntry.language.stop_timer = <%= raw l(:button_stop_timer).to_json %>
-      TimeEntry.language.are_you_sure = <%= raw l(:text_are_you_sure).to_json %>
-
-       document.observe('dom:loaded', function() {
-           TimeEntry.updateTodayEntries()
-       })
-
-
-      $(function() {
-          $('#add-by-issue-id').submit(function() {
-              $.get("<%= url_for(:action => :add_entry) %>", $(this).serialize(), function(response) {
-                  $('#entries').append(response)
-              })
-
-              return false
-          })
-
-          $(document).on("submit", "form.time-entry", function() {
-              var $form = $(this)
-
-              $.post($(this).attr('action'), $(this).serialize(), function(response) {
-                  $form.html(response)
-
-                  TimeEntry.updateTodayEntries()
-              })
-
-              return false
-          });
-      })
-
-
-   </script>
-
-    <style type="text/css">
-        table.list th {
-            text-align: left;
-        }
-
-        table.list td, table.list th {
-            padding: .2em .5em;
-        }
-    </style>
+<%= form_for :bulk_time_entry_title, remote: true, :url => {:action => 'save'}, :html => {:class => 'tabular'} do |f| %>
+  <div id="entries">
+    <%= render :partial => 'time_entry', :collection => @time_entries %>
+  </div>
+  <div id="add-entry">
+    <%= link_to l(:label_bulk_time_add_another), add_entry_path, id: 'add-entry-link' %>
+  </div>
+  <br/>
+  <%= submit_tag l(:button_save) %>
 <% end %>
-
-
-<div id="entries">
-   <%= render :partial => 'time_entry', :collection => @time_entries %>
-</div>
-<div id="add-entry">
-   <button onclick="$.get('<%= url_for(:action => 'add_entry') %>', function(data) { $('#entries').append(data) })" accesskey="a">
-      <%=  l(:label_bulk_time_add_another) %>
-   </button>
-
-   <button onclick="TimeEntry.saveAllEntries(); return false;" style="margin-left: 1em;">
-      <%= l(:button_save_all_entries) %>
-   </button>
-</div>
-
-<div id="time-entries-today" style="margin-top: 2em;">
-
-</div>
 
 <% html_title l(:label_bulk_time_entries) %>

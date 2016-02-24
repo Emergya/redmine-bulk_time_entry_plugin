@@ -3,21 +3,21 @@ module BulkTimeEntriesHelper
   def label_for_field(field, rnd_id, options = { })
     label_text = l(options[:label]) if options[:label]
     label_text ||= l(("field_"+field.to_s.gsub(/\_id$/, "")).to_sym)
-    #label_text += "<span class=\"required\">*</span>".html_safe if options.delete(:required)
-
-    label = content_tag("label", label_text,
-      :class => (@object && @object.errors[field].present? ? "error" : nil),
-      :for => (@object_name.to_s + "_" + rnd_id.to_s + "_" + field.to_s)).html_safe
-
-    label.html_safe
+    span = options.delete(:required) ? content_tag(:span, " *", :class => "required") : ""
+    label = content_tag(:label,
+      :class => (@object && @object.errors[field] ? "error" : nil),
+      :for => (@object_name.to_s + "_" + rnd_id.to_s + "_" + field.to_s)) do
+      (label_text + span).html_safe
+    end
+    label
   end
-  
-  def grouped_options_for_issues(issues)
+
+  def grouped_options_for_issues(issues, selected = '')
     closed_issues, open_issues = *issues.partition {|issue| issue.closed?}
 
-    html = '<option></option>'
+    html = content_tag :option
     unless open_issues.empty?
-      html << labeled_option_group_from_collection_for_select(:label_open_issues, open_issues)
+      html << labeled_option_group_from_collection_for_select(:label_open_issues, open_issues, selected)
     end
 
     unless closed_issues.empty?
@@ -26,19 +26,9 @@ module BulkTimeEntriesHelper
     html
   end
 
-  def labeled_option_group_from_collection_for_select(label, collection)
-    html = "<optgroup label='#{l(label)}'>"
-    html << options_from_collection_for_select(collection, :id, :to_s)
-    html << "</optgroup>"
+  def labeled_option_group_from_collection_for_select(label, collection, selected = '')
+    html = content_tag(:optgroup, '', label: l(label))
+    html << options_from_collection_for_select(collection, :id, :to_s, selected)
     html
-  end
-
-  def get_issues(project_id)
-    project = BulkTimeEntriesController.allowed_project?(project_id)
-    if project
-      project.issues.all(:order => 'id ASC')
-    else
-      []
-    end
   end
 end
