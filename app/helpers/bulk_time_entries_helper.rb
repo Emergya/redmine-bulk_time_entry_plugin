@@ -13,7 +13,7 @@ module BulkTimeEntriesHelper
   end
 
   def grouped_options_for_issues(issues, selected = '')
-    closed_issues, open_issues = *issues.partition {|issue| issue.closed?}
+    closed_issues, open_issues = *issues.visible.partition {|issue| issue.closed?}
 
     html = content_tag :option
     unless open_issues.empty?
